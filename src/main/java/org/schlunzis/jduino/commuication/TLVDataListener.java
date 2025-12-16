@@ -24,6 +24,7 @@ public class TLVDataListener implements SerialPortDataListener {
     private final SerialPort serialPort;
     private final List<CommunicatorMessageListener> listeners;
     private int expectedLength = -1;           // -1 = waiting for length
+    private byte type = -1;                 // -1 = waiting for type
 
     public TLVDataListener(SerialPort serialPort, List<CommunicatorMessageListener> listeners) {
         this.serialPort = serialPort;
@@ -35,38 +36,46 @@ public class TLVDataListener implements SerialPortDataListener {
         return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
     }
 
-    // TODO: comply to TLV protocol pattern
     @Override
     public void serialEvent(SerialPortEvent event) {
         byte[] buffer = new byte[serialPort.bytesAvailable()];
         serialPort.readBytes(buffer, buffer.length);
-
         for (byte b : buffer) {
             processByte(b);
         }
     }
 
     private void processByte(byte b) {
-        if (expectedLength < 0) {
-            // First byte = message length
+        if (type < 0) {
+            // First byte = message type
+            type = b;
+            log.debug("message type {}", type);
+        } else if (expectedLength < 0) {
+            // Second byte = message length
             expectedLength = b & 0xFF;  // convert to unsigned
             log.debug("expected length {}", expectedLength);
             payload.reset();
         } else {
+            // Subsequent bytes = payload
             payload.write(b);
-
             if (payload.size() == expectedLength) {
                 // Full message received
                 String message = payload.toString(StandardCharsets.UTF_8);
                 log.debug("Received: {}", message);
                 for (CommunicatorMessageListener listener : listeners) {
-                    listener.onMessageReceived(message);
+                    listener.onMessageReceived(type, message);
                 }
 
                 // Reset for next message
-                expectedLength = -1;
-                payload.reset();
+                reset();
             }
         }
     }
+
+    private void reset() {
+        expectedLength = -1;
+        type = -1;
+        payload.reset();
+    }
+
 }

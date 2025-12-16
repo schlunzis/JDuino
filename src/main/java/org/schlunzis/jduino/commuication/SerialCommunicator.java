@@ -1,12 +1,12 @@
 package org.schlunzis.jduino.commuication;
 
 import com.fazecast.jSerialComm.SerialPort;
+import org.schlunzis.jduino.CommandType;
 import org.schlunzis.jduino.Communicator;
 import org.schlunzis.jduino.CommunicatorMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,47 +84,12 @@ public class SerialCommunicator implements Communicator {
     }
 
     @Override
-    public void sendCommand(String command) {
-        byte[] payload = command.getBytes(StandardCharsets.UTF_8);
+    public void sendCommand(CommandType commandType, byte[] payload) {
         if (payload.length > 255) throw new IllegalArgumentException("Command too long");
 
+        serialPort.writeBytes(new byte[]{commandType.getCode()}, 1); // type
         serialPort.writeBytes(new byte[]{(byte) payload.length}, 1); // length
         serialPort.writeBytes(payload, payload.length);               // payload
-    }
-
-    @Override
-    public void sendEchoCommand(String msg) {
-        byte[] textBytes = msg.getBytes(StandardCharsets.UTF_8);
-
-        byte[] payload = new byte[1 + textBytes.length];
-        payload[0] = Protocol.CMD_ECHO.getCode();
-        System.arraycopy(textBytes, 0, payload, 1, textBytes.length);
-
-        serialPort.writeBytes(new byte[]{(byte) payload.length}, 1);
-        serialPort.writeBytes(payload, payload.length);
-    }
-
-    @Override
-    public void sendLEDCommand(int ledPin, boolean state) {
-        byte[] payload = new byte[3];
-        payload[0] = Protocol.CMD_LED.getCode();
-        payload[1] = (byte) ledPin;
-        payload[2] = (byte) (state ? 1 : 0);
-
-        serialPort.writeBytes(new byte[]{(byte) payload.length}, 1);
-        serialPort.writeBytes(payload, payload.length);
-    }
-
-    @Override
-    public void sendLCDCommand(String msg) {
-        byte[] textBytes = msg.getBytes(StandardCharsets.UTF_8);
-
-        byte[] payload = new byte[1 + textBytes.length];
-        payload[0] = Protocol.CMD_LCD.getCode();
-        System.arraycopy(textBytes, 0, payload, 1, textBytes.length);
-
-        serialPort.writeBytes(new byte[]{(byte) payload.length}, 1);
-        serialPort.writeBytes(payload, payload.length);
     }
 
 }

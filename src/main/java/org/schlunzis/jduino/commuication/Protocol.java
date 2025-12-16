@@ -1,6 +1,8 @@
 package org.schlunzis.jduino.commuication;
 
-public enum Protocol {
+import org.schlunzis.jduino.CommandType;
+
+public enum Protocol implements CommandType {
     CMD_ECHO((byte) 0x01),
     CMD_BUTTON((byte) 0x02),
     CMD_LED((byte) 0x03),
@@ -12,6 +14,7 @@ public enum Protocol {
         this.code = code;
     }
 
+    @Override
     public byte getCode() {
         return code;
     }

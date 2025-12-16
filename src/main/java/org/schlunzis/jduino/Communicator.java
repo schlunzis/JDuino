@@ -8,13 +8,7 @@ public interface Communicator {
 
     void close();
 
-    void sendCommand(String command);
-
-    void sendEchoCommand(String msg);
-
-    void sendLEDCommand(int ledPin, boolean state);
-
-    void sendLCDCommand(String msg);
+    void sendCommand(CommandType commandType, byte[] payload);
 
     SerialPort[] getPorts();
 
