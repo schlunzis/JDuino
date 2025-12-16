@@ -1,8 +1,10 @@
 package org.schlunzis.jduino;
 
-@FunctionalInterface
-public interface CommunicatorMessageListener {
+import org.schlunzis.jduino.proto.Message;
 
-    void onMessageReceived(byte command, String message);
+@FunctionalInterface
+public interface CommunicatorMessageListener<M extends Message> {
+
+    void onMessageReceived(M message);
 
 }

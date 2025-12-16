@@ -1,8 +1,8 @@
-package org.schlunzis.jduino.commuication;
+package org.schlunzis.jduino.simple;
 
 import org.schlunzis.jduino.CommandType;
 
-public enum Protocol implements CommandType {
+public enum SimpleProtocol implements CommandType {
     CMD_ECHO((byte) 0x01),
     CMD_BUTTON((byte) 0x02),
     CMD_LED((byte) 0x03),
@@ -10,7 +10,7 @@ public enum Protocol implements CommandType {
 
     private final byte code;
 
-    Protocol(byte code) {
+    SimpleProtocol(byte code) {
         this.code = code;
     }
 

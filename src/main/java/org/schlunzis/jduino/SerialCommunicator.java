@@ -1,23 +1,24 @@
-package org.schlunzis.jduino.commuication;
+package org.schlunzis.jduino;
 
 import com.fazecast.jSerialComm.SerialPort;
-import org.schlunzis.jduino.CommandType;
-import org.schlunzis.jduino.Communicator;
-import org.schlunzis.jduino.CommunicatorMessageListener;
+import org.schlunzis.jduino.proto.Message;
+import org.schlunzis.jduino.proto.MessageEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SerialCommunicator implements Communicator {
+public class SerialCommunicator<M extends Message> implements Communicator<M> {
 
     private static final Logger log = LoggerFactory.getLogger(SerialCommunicator.class);
-    private final List<CommunicatorMessageListener> listeners;
+    private final List<CommunicatorMessageListener<M>> listeners;
+    private final MessageEncoder<M> messageEncoder;
     private SerialPort serialPort;
     private boolean connected = false;
 
-    public SerialCommunicator() {
+    public SerialCommunicator(MessageEncoder<M> messageEncoder) {
+        this.messageEncoder = messageEncoder;
         listeners = new ArrayList<>();
     }
 
@@ -30,11 +31,12 @@ public class SerialCommunicator implements Communicator {
     }
 
     @Override
-    public void addMessageListener(CommunicatorMessageListener listener) {
+    public void addMessageListener(CommunicatorMessageListener<M> listener) {
         listeners.add(listener);
     }
 
-    public void removeMessageListener(CommunicatorMessageListener listener) {
+    @Override
+    public void removeMessageListener(CommunicatorMessageListener<M> listener) {
         listeners.remove(listener);
     }
 
@@ -59,7 +61,11 @@ public class SerialCommunicator implements Communicator {
                 1000,    // Read timeout (ms)
                 0
         );
-        serialPort.addDataListener(new TLVDataListener(serialPort, listeners));
+        // serialPort.addDataListener(new TLVDataListener(serialPort, message ->
+        //                 listeners.forEach(listener ->
+        //                         listener.onMessageReceived(message))
+        //         )
+        //   );
 
         if (!serialPort.openPort())
             log.error("Failed to open port");
@@ -84,12 +90,10 @@ public class SerialCommunicator implements Communicator {
     }
 
     @Override
-    public void sendCommand(CommandType commandType, byte[] payload) {
-        if (payload.length > 255) throw new IllegalArgumentException("Command too long");
+    public void sendMessage(M message) {
+        byte[] encodedMessage = messageEncoder.encode(message);
 
-        serialPort.writeBytes(new byte[]{commandType.getCode()}, 1); // type
-        serialPort.writeBytes(new byte[]{(byte) payload.length}, 1); // length
-        serialPort.writeBytes(payload, payload.length);               // payload
+        serialPort.writeBytes(encodedMessage, encodedMessage.length);
     }
 
 }
