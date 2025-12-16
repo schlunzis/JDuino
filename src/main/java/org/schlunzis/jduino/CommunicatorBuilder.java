@@ -1,33 +1,28 @@
 package org.schlunzis.jduino;
 
-import org.schlunzis.jduino.proto.Message;
+import org.schlunzis.jduino.proto.tlv.TLVMessage;
+import org.schlunzis.jduino.proto.tlv.TLVMessageEncoder;
 
-public class CommunicatorBuilder<C extends Communicator<M>, M extends Message> {
+public class CommunicatorBuilder {
 
-    private Class<C> communicatorClass;
-    private Class<M> messageClass;
-
-    private CommunicatorBuilder(Class<C> communicatorClass, Class<M> messageClass) {
-        this.communicatorClass = communicatorClass;
-        this.messageClass = messageClass;
+    public static CommunicatorBuilder builder() {
+        return new CommunicatorBuilder();
     }
 
-    public static CommunicatorBuilder<Communicator<Message>, Message> builder() {
-        return new CommunicatorBuilder<>(null, null);
+    public SerialCommunicatorBuilder serial() {
+        return new SerialCommunicatorBuilder();
     }
 
-    public <Com extends Communicator<M>> CommunicatorBuilder<Com, M> withCommunicator(Class<Com> communicator) {
-        return new CommunicatorBuilder<>(communicator, this.messageClass);
+    public static class SerialCommunicatorBuilder {
+        public SerialTLVCommunicatorBuilder tlv() {
+            return new SerialTLVCommunicatorBuilder();
+        }
     }
 
-    @SuppressWarnings("unchecked")
-    public <Msg extends Message> CommunicatorBuilder<Communicator<Msg>, Msg> withMessage(Class<Msg> message) {
-        return new CommunicatorBuilder<>((Class<Communicator<Msg>>) (this.communicatorClass), message);
+    public static class SerialTLVCommunicatorBuilder extends SerialCommunicatorBuilder {
+        public SerialCommunicator<TLVMessage> build() {
+            return new SerialCommunicator<>(new TLVMessageEncoder());
+        }
     }
-
-    public C build() {
-        return null;
-    }
-
 
 }

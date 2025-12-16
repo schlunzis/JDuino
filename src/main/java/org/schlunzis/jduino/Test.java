@@ -6,9 +6,9 @@ public class Test {
 
     static void main() {
         Communicator<TLVMessage> com = CommunicatorBuilder.builder()
-                                                          .withCommunicator(SerialCommunicator.class)
-                                                          .withMessage(TLVMessage.class)
-                                                          .build();
+                .serial()
+                .tlv()
+                .build();
         com.close();
     }
 
