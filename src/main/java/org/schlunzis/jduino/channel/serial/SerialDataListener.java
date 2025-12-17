@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see <a href="https://de.wikipedia.org/wiki/Type-Length-Value">Wikipedia</a>
  */
-class SerialDataListener<P extends Protocol> implements SerialPortDataListener {
+class SerialDataListener<P extends Protocol<P>> implements SerialPortDataListener {
 
     private static final Logger log = LoggerFactory.getLogger(SerialDataListener.class);
 

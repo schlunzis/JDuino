@@ -8,7 +8,7 @@ public class Test {
     static void main() {
         Channel<TLV> com = ChannelBuilder.builder()
                 .protocol(new TLV())
-                .channelFactory(p -> new SerialChannel<>(p))
+                .channelFactory(SerialChannel::new)
                 .build();
         com.close();
     }
