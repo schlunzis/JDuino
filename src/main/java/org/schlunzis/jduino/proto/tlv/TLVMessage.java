@@ -6,5 +6,5 @@ public record TLVMessage(
         byte type,
         byte length,
         byte[] value
-) implements Message {
+) implements Message<TLV> {
 }

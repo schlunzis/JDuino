@@ -6,4 +6,5 @@ module org.schlunzis.jduino {
     exports org.schlunzis.jduino.proto.tlv;
     exports org.schlunzis.jduino.simple;
     exports org.schlunzis.jduino.proto;
+    exports org.schlunzis.jduino.channel.serial;
 }
