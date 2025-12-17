@@ -1,4 +1,4 @@
 package org.schlunzis.jduino.proto;
 
-public interface Message {
+public interface Message<P extends Protocol> {
 }

@@ -1,7 +1,7 @@
 package org.schlunzis.jduino.proto;
 
-public interface MessageCallback<M extends Message> {
+public interface MessageCallback<P extends Protocol> {
 
-    void onMessage(M message);
+    void onMessage(Message<P> message);
 
 }

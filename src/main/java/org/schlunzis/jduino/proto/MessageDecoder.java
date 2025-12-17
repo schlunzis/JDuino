@@ -1,11 +1,11 @@
 package org.schlunzis.jduino.proto;
 
-public interface MessageDecoder<T> {
+public interface MessageDecoder<P extends Protocol> {
 
     void pushNextByte(byte next);
 
     boolean isMessageComplete();
 
-    T getDecodedMessage();
+    Message<P> getDecodedMessage();
 
 }
