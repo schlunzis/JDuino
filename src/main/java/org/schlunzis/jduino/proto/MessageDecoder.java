@@ -1,6 +1,6 @@
 package org.schlunzis.jduino.proto;
 
-public interface MessageDecoder<T> {
+public interface MessageDecoder<T extends Message> {
 
     void pushNextByte(byte next);
 

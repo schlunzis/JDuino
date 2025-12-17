@@ -1,9 +1,11 @@
-package org.schlunzis.jduino.proto.tlv;
+package org.schlunzis.jduino.connection.serial;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
-import org.schlunzis.jduino.proto.MessageCallback;
+import org.schlunzis.jduino.connection.MessageCallback;
+import org.schlunzis.jduino.proto.Message;
+import org.schlunzis.jduino.proto.MessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,16 +14,17 @@ import org.slf4j.LoggerFactory;
  *
  * @see <a href="https://de.wikipedia.org/wiki/Type-Length-Value">Wikipedia</a>
  */
-public class TLVDataListener implements SerialPortDataListener {
+public class SerialDataListener<M extends Message> implements SerialPortDataListener {
 
-    private static final Logger log = LoggerFactory.getLogger(TLVDataListener.class);
+    private static final Logger log = LoggerFactory.getLogger(SerialDataListener.class);
 
     private final SerialPort serialPort;
-    private final MessageCallback<TLVMessage> callback;
-    private final TLVMessageDecoder messageDecoder = new TLVMessageDecoder();
+    private final MessageCallback<M> callback;
+    private final MessageDecoder<M> messageDecoder;
 
-    public TLVDataListener(SerialPort serialPort, MessageCallback<TLVMessage> callback) {
+    public SerialDataListener(SerialPort serialPort, MessageDecoder<M> messageDecoder, MessageCallback<M> callback) {
         this.serialPort = serialPort;
+        this.messageDecoder = messageDecoder;
         this.callback = callback;
     }
 
@@ -32,12 +35,14 @@ public class TLVDataListener implements SerialPortDataListener {
 
     @Override
     public void serialEvent(SerialPortEvent event) {
+        log.debug("Serial event: {}", event.getEventType());
         byte[] buffer = new byte[serialPort.bytesAvailable()];
         serialPort.readBytes(buffer, buffer.length);
         for (byte b : buffer) {
+            log.debug("Received byte: 0x{}", b);
             messageDecoder.pushNextByte(b);
             if (messageDecoder.isMessageComplete()) {
-                TLVMessage message = messageDecoder.getDecodedMessage();
+                M message = messageDecoder.getDecodedMessage();
                 callback.onMessage(message);
             }
         }
