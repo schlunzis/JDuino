@@ -3,12 +3,15 @@ package org.schlunzis.jduino.channel.serial;
 import com.fazecast.jSerialComm.SerialPort;
 import org.schlunzis.jduino.channel.Channel;
 import org.schlunzis.jduino.channel.ChannelMessageListener;
+import org.schlunzis.jduino.channel.Device;
+import org.schlunzis.jduino.channel.DeviceConfiguration;
 import org.schlunzis.jduino.protocol.Message;
 import org.schlunzis.jduino.protocol.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SerialChannel<P extends Protocol<P>> implements Channel<P> {
@@ -24,12 +27,16 @@ public class SerialChannel<P extends Protocol<P>> implements Channel<P> {
         listeners = new ArrayList<>();
     }
 
+    @Override
     public boolean isConnected() {
         return connected;
     }
 
-    public SerialPort[] getPorts() {
-        return SerialPort.getCommPorts();
+    @Override
+    public List<Device> getDevices() {
+        return Arrays.stream(SerialPort.getCommPorts())
+                     .<Device>map(port -> new SerialDevice(port.getDescriptivePortName()))
+                     .toList();
     }
 
     @Override
@@ -43,16 +50,21 @@ public class SerialChannel<P extends Protocol<P>> implements Channel<P> {
     }
 
     @Override
-    public void open(String portDescriptor, int baudRate) {
-        if (connected) {
-            log.warn("Communicator is already connected");
+    public void open(DeviceConfiguration deviceConfiguration) {
+        if (!(deviceConfiguration instanceof SerialDeviceConfiguration serialConfig)) {
+            log.error("Invalid device configuration type");
             return;
         }
 
-        serialPort = SerialPort.getCommPort(portDescriptor);
+        if (connected) {
+            log.warn("Channel is already connected");
+            return;
+        }
+
+        serialPort = SerialPort.getCommPort(serialConfig.getDevice().portDescriptor());
 
         serialPort.setComPortParameters(
-                baudRate,
+                serialConfig.baudRate(),
                 8,       // Data bits
                 SerialPort.ONE_STOP_BIT,
                 SerialPort.NO_PARITY
@@ -81,7 +93,7 @@ public class SerialChannel<P extends Protocol<P>> implements Channel<P> {
     @Override
     public void close() {
         if (!connected) {
-            log.info("Communicator is not connected");
+            log.info("Channel is not connected");
             return;
         }
         if (serialPort.closePort()) {

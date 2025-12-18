@@ -29,7 +29,7 @@ public class TLVMessageDecoder implements MessageDecoder<TLV> {
     }
 
     public TLVMessage getDecodedMessage() {
-        TLVMessage message = new TLVMessage(type, (byte) expectedLength, payload.toByteArray());
+        TLVMessage message = new TLVMessage(type, payload.toByteArray());
         reset();
         return message;
     }

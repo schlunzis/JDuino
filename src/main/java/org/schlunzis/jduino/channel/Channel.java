@@ -1,10 +1,12 @@
 package org.schlunzis.jduino.channel;
 
-import com.fazecast.jSerialComm.SerialPort;
 import org.schlunzis.jduino.channel.serial.SerialChannel;
 import org.schlunzis.jduino.protocol.Message;
 import org.schlunzis.jduino.protocol.Protocol;
 import org.schlunzis.jduino.protocol.tlv.TLV;
+import org.schlunzis.jduino.simple.SimpleChannel;
+
+import java.util.List;
 
 public interface Channel<P extends Protocol<P>> {
 
@@ -12,17 +14,19 @@ public interface Channel<P extends Protocol<P>> {
         return new ChannelBuilder<>(null, null);
     }
 
-    void open(String portDescriptor, int baudRate);
+    void open(DeviceConfiguration deviceConfiguration);
 
     void close();
 
     void sendMessage(Message<P> message);
 
-    SerialPort[] getPorts();
+    List<Device> getDevices();
 
     void addMessageListener(ChannelMessageListener<P> listener);
 
     void removeMessageListener(ChannelMessageListener<P> listener);
+
+    boolean isConnected();
 
     @FunctionalInterface
     interface ChannelFactory<P extends Protocol<P>, C extends Channel<P>> {
@@ -55,6 +59,10 @@ public interface Channel<P extends Protocol<P>> {
 
         public ChannelBuilder<P, SerialChannel<P>> serial() {
             return channelFactory(SerialChannel::new);
+        }
+
+        public ChannelBuilder<TLV, SimpleChannel> simple() {
+            return tlv().channelFactory(SimpleChannel::new);
         }
 
         public C build() {
