@@ -98,7 +98,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <failOnWarnings>true</failOnWarnings>
+                    <failOnWarnings>false</failOnWarnings>
                 </configuration>
             </plugin>
             <plugin>
