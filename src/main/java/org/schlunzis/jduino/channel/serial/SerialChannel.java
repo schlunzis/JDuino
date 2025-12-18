@@ -3,7 +3,6 @@ package org.schlunzis.jduino.channel.serial;
 import com.fazecast.jSerialComm.SerialPort;
 import org.schlunzis.jduino.channel.Channel;
 import org.schlunzis.jduino.channel.ChannelMessageListener;
-import org.schlunzis.jduino.channel.Device;
 import org.schlunzis.jduino.channel.DeviceConfiguration;
 import org.schlunzis.jduino.protocol.Message;
 import org.schlunzis.jduino.protocol.Protocol;
@@ -33,9 +32,9 @@ public class SerialChannel<P extends Protocol<P>> implements Channel<P> {
     }
 
     @Override
-    public List<Device> getDevices() {
+    public List<SerialDevice> getDevices() {
         return Arrays.stream(SerialPort.getCommPorts())
-                     .<Device>map(port -> new SerialDevice(port.getDescriptivePortName()))
+                     .map(port -> new SerialDevice(port.getDescriptivePortName(), port.getSystemPortPath()))
                      .toList();
     }
 
@@ -61,7 +60,7 @@ public class SerialChannel<P extends Protocol<P>> implements Channel<P> {
             return;
         }
 
-        serialPort = SerialPort.getCommPort(serialConfig.getDevice().portDescriptor());
+        serialPort = SerialPort.getCommPort(serialConfig.getDevice().portPath());
 
         serialPort.setComPortParameters(
                 serialConfig.baudRate(),

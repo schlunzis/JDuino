@@ -20,7 +20,7 @@ public interface Channel<P extends Protocol<P>> {
 
     void sendMessage(Message<P> message);
 
-    List<Device> getDevices();
+    List<? extends Device> getDevices();
 
     void addMessageListener(ChannelMessageListener<P> listener);
 
