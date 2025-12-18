@@ -26,6 +26,10 @@ public class SerialChannel<P extends Protocol<P>> implements Channel<P> {
         listeners = new ArrayList<>();
     }
 
+    public static <P extends Protocol<P>> Builder<P> builder() {
+        return new Builder<>();
+    }
+
     @Override
     public boolean isConnected() {
         return connected;
@@ -34,8 +38,8 @@ public class SerialChannel<P extends Protocol<P>> implements Channel<P> {
     @Override
     public List<SerialDevice> getDevices() {
         return Arrays.stream(SerialPort.getCommPorts())
-                     .map(port -> new SerialDevice(port.getDescriptivePortName(), port.getSystemPortPath()))
-                     .toList();
+                .map(port -> new SerialDevice(port.getDescriptivePortName(), port.getSystemPortPath()))
+                .toList();
     }
 
     @Override
@@ -108,6 +112,18 @@ public class SerialChannel<P extends Protocol<P>> implements Channel<P> {
         byte[] encodedMessage = protocol.getMessageEncoder().encode(message);
 
         serialPort.writeBytes(encodedMessage, encodedMessage.length);
+    }
+
+    public static class Builder<P extends Protocol<P>> extends ChannelBuilder<P, SerialChannel<P>> {
+        private Builder() {
+            super(null, null);
+        }
+
+        @Override
+        public SerialChannel<P> build() {
+            this.channelFactory = SerialChannel::new;
+            return super.build();
+        }
     }
 
 }

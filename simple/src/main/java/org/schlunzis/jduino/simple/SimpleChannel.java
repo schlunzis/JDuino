@@ -17,6 +17,13 @@ public class SimpleChannel extends SerialChannel<TLV> {
         super(protocol);
     }
 
+    public static SimpleChannel create() {
+        return SerialChannel.builder()
+                .protocol(new TLV())
+                .channelFactory(SimpleChannel::new)
+                .build();
+    }
+
     public void sendEchoCommand(String msg) {
         sendMessage(new TLVMessage(CMD_ECHO, msg.getBytes(StandardCharsets.UTF_8)));
     }
