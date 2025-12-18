@@ -6,10 +6,15 @@ Java applications.
 
 ## Usage
 
-If you want to use JDuino in your project, you need two components: the `serial` component for serial communication
-and the `tlv` component for encoding and decoding data in TLV (Type-Length-Value) format.
+### Getting Started
 
-To use JitPack, add the following to your `pom.xml`:
+To get started with a proof of concept, you can use the `SimpleChannel` class, which combines the serial channel and TLV
+protocol into a single class for easy use.
+
+This assumes that you have an Arduino running that can handle TLV messages. An example Arduino sketch can be found
+[here](https://github.com/JayPi4c/SerialController).
+
+First, add JDuino to your project using JitPack by adding the following to your `pom.xml`:
 
 <!-- @formatter:off -->
 ```xml
@@ -28,30 +33,17 @@ Then, add the dependencies:
 ```xml
 <dependency>
     <groupId>com.github.schlunzis.jduino</groupId>
-    <artifactId>serial</artifactId>
-    <version>COMMIT_HASH_OR_TAG</version>
-</dependency>
-<dependency>
-    <groupId>com.github.schlunzis.jduino</groupId>
-    <artifactId>tlv</artifactId>
+    <artifactId>simple</artifactId>
     <version>COMMIT_HASH_OR_TAG</version>
 </dependency>
 ```
 <!-- @formatter:on -->
 
-If you have the required dependencies, you can start using JDuino in your Java application.
-
-### Getting Started
-
-To get started with a proof of concept, you can use the `SimpleChannel` class, which combines the serial channel and TLV
-protocol into a single class for easy use.
-
-This assumes that you have an Arduino running that can handle TLV messages. An example Arduino sketch can be found
-[here](https://github.com/JayPi4c/SerialController).
+Finally, you can use the following code to communicate with your Arduino:
 
 ```java
 void main() {
-    SimpleChannel channel = Channel.builder().protocol(new TLV()).channelFactory(SimpleChannel::new).build();
+    SimpleChannel channel = SimpleChannel.create();
     List<SerialDevice> devices = channel.getDevices();
     SerialDevice device = devices.getFirst(); // Select the desired device
     channel.open(new SerialDeviceConfiguration(device, 250000));
@@ -69,6 +61,40 @@ This should cause the Arduino to respond to the echo command and turn on the LED
 built-in LED on most Arduino boards.
 
 ### General Usage
+
+If you want to use JDuino in your project, you need two components: a protocol and a channel.
+The `serial` channel for serial communication and the `tlv` protocol for encoding and decoding data in TLV
+(Type-Length-Value) format are currently available.
+
+Since JDuino is currently only available via JitPack, add the following to your `pom.xml`:
+
+<!-- @formatter:off -->
+```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
+<!-- @formatter:on -->
+
+Then, add the dependencies:
+
+<!-- @formatter:off -->
+```xml
+<dependency>
+    <groupId>com.github.schlunzis.jduino</groupId>
+    <artifactId>CHANNEL_IMPLEMENTATION</artifactId>
+    <version>COMMIT_HASH_OR_TAG</version>
+</dependency>
+<dependency>
+    <groupId>com.github.schlunzis.jduino</groupId>
+    <artifactId>PROTOCOL_IMPLEMENTATION</artifactId>
+    <version>COMMIT_HASH_OR_TAG</version>
+</dependency>
+```
+<!-- @formatter:on -->
 
 Here is a general example of how to use JDuino to communicate with an Arduino board using the TLV protocol over a serial
 connection:
