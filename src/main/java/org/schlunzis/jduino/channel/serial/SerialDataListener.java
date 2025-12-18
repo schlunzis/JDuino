@@ -3,10 +3,10 @@ package org.schlunzis.jduino.channel.serial;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
-import org.schlunzis.jduino.proto.Message;
-import org.schlunzis.jduino.proto.MessageCallback;
-import org.schlunzis.jduino.proto.MessageDecoder;
-import org.schlunzis.jduino.proto.Protocol;
+import org.schlunzis.jduino.protocol.Message;
+import org.schlunzis.jduino.protocol.MessageCallback;
+import org.schlunzis.jduino.protocol.MessageDecoder;
+import org.schlunzis.jduino.protocol.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

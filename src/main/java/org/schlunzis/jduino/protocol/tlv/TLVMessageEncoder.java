@@ -1,7 +1,7 @@
-package org.schlunzis.jduino.proto.tlv;
+package org.schlunzis.jduino.protocol.tlv;
 
-import org.schlunzis.jduino.proto.Message;
-import org.schlunzis.jduino.proto.MessageEncoder;
+import org.schlunzis.jduino.protocol.Message;
+import org.schlunzis.jduino.protocol.MessageEncoder;
 
 public class TLVMessageEncoder implements MessageEncoder<TLV> {
 

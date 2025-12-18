@@ -1,6 +1,6 @@
-package org.schlunzis.jduino.proto.tlv;
+package org.schlunzis.jduino.protocol.tlv;
 
-import org.schlunzis.jduino.proto.Message;
+import org.schlunzis.jduino.protocol.Message;
 
 public record TLVMessage(
         byte type,

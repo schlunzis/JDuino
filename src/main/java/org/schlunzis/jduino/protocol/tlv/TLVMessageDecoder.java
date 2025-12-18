@@ -1,6 +1,6 @@
-package org.schlunzis.jduino.proto.tlv;
+package org.schlunzis.jduino.protocol.tlv;
 
-import org.schlunzis.jduino.proto.MessageDecoder;
+import org.schlunzis.jduino.protocol.MessageDecoder;
 
 import java.io.ByteArrayOutputStream;
 

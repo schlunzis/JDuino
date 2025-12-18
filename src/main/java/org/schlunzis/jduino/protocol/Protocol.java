@@ -1,4 +1,4 @@
-package org.schlunzis.jduino.proto;
+package org.schlunzis.jduino.protocol;
 
 public interface Protocol<P extends Protocol<P>> {
 
