@@ -1,9 +1,12 @@
-package org.schlunzis.jduino.proto.tlv;
+package org.schlunzis.jduino.channel.serial;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
-import org.schlunzis.jduino.proto.MessageCallback;
+import org.schlunzis.jduino.protocol.Message;
+import org.schlunzis.jduino.protocol.MessageCallback;
+import org.schlunzis.jduino.protocol.MessageDecoder;
+import org.schlunzis.jduino.protocol.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,17 +15,18 @@ import org.slf4j.LoggerFactory;
  *
  * @see <a href="https://de.wikipedia.org/wiki/Type-Length-Value">Wikipedia</a>
  */
-public class TLVDataListener implements SerialPortDataListener {
+class SerialDataListener<P extends Protocol<P>> implements SerialPortDataListener {
 
-    private static final Logger log = LoggerFactory.getLogger(TLVDataListener.class);
+    private static final Logger log = LoggerFactory.getLogger(SerialDataListener.class);
 
     private final SerialPort serialPort;
-    private final MessageCallback<TLVMessage> callback;
-    private final TLVMessageDecoder messageDecoder = new TLVMessageDecoder();
+    private final MessageCallback<P> callback;
+    private final MessageDecoder<P> messageDecoder;
 
-    public TLVDataListener(SerialPort serialPort, MessageCallback<TLVMessage> callback) {
+    public SerialDataListener(SerialPort serialPort, MessageCallback<P> callback, MessageDecoder<P> messageDecoder) {
         this.serialPort = serialPort;
         this.callback = callback;
+        this.messageDecoder = messageDecoder;
     }
 
     @Override
@@ -37,7 +41,7 @@ public class TLVDataListener implements SerialPortDataListener {
         for (byte b : buffer) {
             messageDecoder.pushNextByte(b);
             if (messageDecoder.isMessageComplete()) {
-                TLVMessage message = messageDecoder.getDecodedMessage();
+                Message<P> message = messageDecoder.getDecodedMessage();
                 callback.onMessage(message);
             }
         }

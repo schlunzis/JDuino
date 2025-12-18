@@ -1,10 +1,10 @@
-package org.schlunzis.jduino.proto.tlv;
+package org.schlunzis.jduino.protocol.tlv;
 
-import org.schlunzis.jduino.proto.MessageDecoder;
+import org.schlunzis.jduino.protocol.MessageDecoder;
 
 import java.io.ByteArrayOutputStream;
 
-public class TLVMessageDecoder implements MessageDecoder<TLVMessage> {
+public class TLVMessageDecoder implements MessageDecoder<TLV> {
 
     private final ByteArrayOutputStream payload = new ByteArrayOutputStream();
     private byte type = -1;

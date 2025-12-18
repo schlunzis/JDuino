@@ -1,24 +1,26 @@
-package org.schlunzis.jduino;
+package org.schlunzis.jduino.channel.serial;
 
 import com.fazecast.jSerialComm.SerialPort;
-import org.schlunzis.jduino.proto.Message;
-import org.schlunzis.jduino.proto.MessageEncoder;
+import org.schlunzis.jduino.channel.Channel;
+import org.schlunzis.jduino.channel.ChannelMessageListener;
+import org.schlunzis.jduino.protocol.Message;
+import org.schlunzis.jduino.protocol.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SerialCommunicator<M extends Message> implements Communicator<M> {
+public class SerialChannel<P extends Protocol<P>> implements Channel<P> {
 
-    private static final Logger log = LoggerFactory.getLogger(SerialCommunicator.class);
-    private final List<CommunicatorMessageListener<M>> listeners;
-    private final MessageEncoder<M> messageEncoder;
+    private static final Logger log = LoggerFactory.getLogger(SerialChannel.class);
+    private final List<ChannelMessageListener<P>> listeners;
+    private final P protocol;
     private SerialPort serialPort;
     private boolean connected = false;
 
-    public SerialCommunicator(MessageEncoder<M> messageEncoder) {
-        this.messageEncoder = messageEncoder;
+    public SerialChannel(P protocol) {
+        this.protocol = protocol;
         listeners = new ArrayList<>();
     }
 
@@ -31,12 +33,12 @@ public class SerialCommunicator<M extends Message> implements Communicator<M> {
     }
 
     @Override
-    public void addMessageListener(CommunicatorMessageListener<M> listener) {
+    public void addMessageListener(ChannelMessageListener<P> listener) {
         listeners.add(listener);
     }
 
     @Override
-    public void removeMessageListener(CommunicatorMessageListener<M> listener) {
+    public void removeMessageListener(ChannelMessageListener<P> listener) {
         listeners.remove(listener);
     }
 
@@ -61,11 +63,12 @@ public class SerialCommunicator<M extends Message> implements Communicator<M> {
                 1000,    // Read timeout (ms)
                 0
         );
-        // serialPort.addDataListener(new TLVDataListener(serialPort, message ->
-        //                 listeners.forEach(listener ->
-        //                         listener.onMessageReceived(message))
-        //         )
-        //   );
+        serialPort.addDataListener(new SerialDataListener<P>(serialPort, (Message<P> message) ->
+                        listeners.forEach(listener ->
+                                listener.onMessageReceived(message)),
+                        protocol.getMessageDecoder()
+                )
+        );
 
         if (!serialPort.openPort())
             log.error("Failed to open port");
@@ -90,8 +93,8 @@ public class SerialCommunicator<M extends Message> implements Communicator<M> {
     }
 
     @Override
-    public void sendMessage(M message) {
-        byte[] encodedMessage = messageEncoder.encode(message);
+    public void sendMessage(Message<P> message) {
+        byte[] encodedMessage = protocol.getMessageEncoder().encode(message);
 
         serialPort.writeBytes(encodedMessage, encodedMessage.length);
     }
