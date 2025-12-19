@@ -4,18 +4,18 @@ import org.schlunzis.jduino.protocol.MessageDecoder;
 import org.schlunzis.jduino.protocol.MessageEncoder;
 import org.schlunzis.jduino.protocol.Protocol;
 
-public class TLV implements Protocol<TLV> {
+public class TLV implements Protocol {
 
-    private final MessageEncoder<TLV> encoder = new TLVMessageEncoder();
-    private final MessageDecoder<TLV> decoder = new TLVMessageDecoder();
+    private final MessageEncoder encoder = new TLVMessageEncoder();
+    private final MessageDecoder decoder = new TLVMessageDecoder();
 
     @Override
-    public MessageEncoder<TLV> getMessageEncoder() {
+    public MessageEncoder getMessageEncoder() {
         return encoder;
     }
 
     @Override
-    public MessageDecoder<TLV> getMessageDecoder() {
+    public MessageDecoder getMessageDecoder() {
         return decoder;
     }
 

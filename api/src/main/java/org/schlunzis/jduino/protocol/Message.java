@@ -1,6 +1,6 @@
 package org.schlunzis.jduino.protocol;
 
-public interface Message<P extends Protocol<P>> {
+public interface Message {
 
     byte getMessageType();
 

@@ -13,20 +13,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SerialChannel<P extends Protocol<P>> implements Channel<P> {
+public class SerialChannel implements Channel {
 
     private static final Logger log = LoggerFactory.getLogger(SerialChannel.class);
-    private final List<ChannelMessageListener<P>> listeners;
-    private final P protocol;
+    private final List<ChannelMessageListener> listeners;
+    private final Protocol protocol;
     private SerialPort serialPort;
     private boolean connected = false;
 
-    public SerialChannel(P protocol) {
+    public SerialChannel(Protocol protocol) {
         this.protocol = protocol;
         listeners = new ArrayList<>();
     }
 
-    public static <P extends Protocol<P>> Builder<P> builder() {
+    public static <P extends Protocol> Builder<P> builder() {
         return new Builder<>();
     }
 
@@ -43,12 +43,12 @@ public class SerialChannel<P extends Protocol<P>> implements Channel<P> {
     }
 
     @Override
-    public void addMessageListener(ChannelMessageListener<P> listener) {
+    public void addMessageListener(ChannelMessageListener listener) {
         listeners.add(listener);
     }
 
     @Override
-    public void removeMessageListener(ChannelMessageListener<P> listener) {
+    public void removeMessageListener(ChannelMessageListener listener) {
         listeners.remove(listener);
     }
 
@@ -78,7 +78,7 @@ public class SerialChannel<P extends Protocol<P>> implements Channel<P> {
                 1000,    // Read timeout (ms)
                 0
         );
-        serialPort.addDataListener(new SerialDataListener<P>(serialPort, (Message<P> message) ->
+        serialPort.addDataListener(new SerialDataListener(serialPort, (Message message) ->
                         listeners.forEach(listener ->
                                 listener.onMessageReceived(message)),
                         protocol.getMessageDecoder()
@@ -108,19 +108,19 @@ public class SerialChannel<P extends Protocol<P>> implements Channel<P> {
     }
 
     @Override
-    public void sendMessage(Message<P> message) {
+    public void sendMessage(Message message) {
         byte[] encodedMessage = protocol.getMessageEncoder().encode(message);
 
         serialPort.writeBytes(encodedMessage, encodedMessage.length);
     }
 
-    public static class Builder<P extends Protocol<P>> extends ChannelBuilder<P, SerialChannel<P>> {
+    public static class Builder<P extends Protocol> extends ChannelBuilder<P, SerialChannel> {
         private Builder() {
             super(null, null);
         }
 
         @Override
-        public SerialChannel<P> build() {
+        public SerialChannel build() {
             this.channelFactory = SerialChannel::new;
             return super.build();
         }

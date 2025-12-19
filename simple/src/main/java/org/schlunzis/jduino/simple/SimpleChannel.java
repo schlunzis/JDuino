@@ -6,7 +6,7 @@ import org.schlunzis.jduino.protocol.tlv.TLVMessage;
 
 import java.nio.charset.StandardCharsets;
 
-public class SimpleChannel extends SerialChannel<TLV> {
+public class SimpleChannel extends SerialChannel {
 
     public static final byte CMD_ECHO = ((byte) 0x01);
     public static final byte CMD_BUTTON = ((byte) 0x02);

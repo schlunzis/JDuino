@@ -5,9 +5,9 @@ import org.schlunzis.jduino.protocol.Protocol;
 
 import java.util.List;
 
-public interface Channel<P extends Protocol<P>> {
+public interface Channel {
 
-    static <P extends Protocol<P>, C extends Channel<P>> ChannelBuilder<P, C> builder() {
+    static <P extends Protocol, C extends Channel> ChannelBuilder<P, C> builder() {
         return new ChannelBuilder<>(null, null);
     }
 
@@ -15,24 +15,24 @@ public interface Channel<P extends Protocol<P>> {
 
     void close();
 
-    void sendMessage(Message<P> message);
+    void sendMessage(Message message);
 
     List<? extends Device> getDevices();
 
-    void addMessageListener(ChannelMessageListener<P> listener);
+    void addMessageListener(ChannelMessageListener listener);
 
-    void removeMessageListener(ChannelMessageListener<P> listener);
+    void removeMessageListener(ChannelMessageListener listener);
 
     boolean isConnected();
 
     @FunctionalInterface
-    interface ChannelFactory<P extends Protocol<P>, C extends Channel<P>> {
+    interface ChannelFactory<P extends Protocol, C extends Channel> {
 
         C createChannel(P protocol);
 
     }
 
-    class ChannelBuilder<P extends Protocol<P>, C extends Channel<P>> {
+    class ChannelBuilder<P extends Protocol, C extends Channel> {
 
         protected P protocol;
         protected ChannelFactory<P, C> channelFactory;
@@ -42,11 +42,11 @@ public interface Channel<P extends Protocol<P>> {
             this.channelFactory = channelFactory;
         }
 
-        public <P2 extends Protocol<P2>> ChannelBuilder<P2, Channel<P2>> protocol(P2 protocol) {
+        public <P2 extends Protocol> ChannelBuilder<P2, Channel> protocol(P2 protocol) {
             return new ChannelBuilder<>(protocol, null);
         }
 
-        public <C2 extends Channel<P>> ChannelBuilder<P, C2> channelFactory(ChannelFactory<P, C2> channelFactory) {
+        public <C2 extends Channel> ChannelBuilder<P, C2> channelFactory(ChannelFactory<P, C2> channelFactory) {
             return new ChannelBuilder<>(protocol, channelFactory);
         }
 
