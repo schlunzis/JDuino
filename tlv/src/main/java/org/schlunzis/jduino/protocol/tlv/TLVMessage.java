@@ -5,7 +5,7 @@ import org.schlunzis.jduino.protocol.Message;
 public record TLVMessage(
         byte type,
         byte[] value
-) implements Message<TLV> {
+) implements Message {
 
     public byte length() {
         return (byte) value.length;

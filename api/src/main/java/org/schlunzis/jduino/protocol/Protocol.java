@@ -1,9 +1,9 @@
 package org.schlunzis.jduino.protocol;
 
-public interface Protocol<P extends Protocol<P>> {
+public interface Protocol {
 
-    MessageEncoder<P> getMessageEncoder();
+    MessageEncoder getMessageEncoder();
 
-    MessageDecoder<P> getMessageDecoder();
+    MessageDecoder getMessageDecoder();
 
 }

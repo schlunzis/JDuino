@@ -3,10 +3,10 @@ package org.schlunzis.jduino.protocol.tlv;
 import org.schlunzis.jduino.protocol.Message;
 import org.schlunzis.jduino.protocol.MessageEncoder;
 
-public class TLVMessageEncoder implements MessageEncoder<TLV> {
+public class TLVMessageEncoder implements MessageEncoder {
 
     @Override
-    public byte[] encode(Message<TLV> m) {
+    public byte[] encode(Message m) {
         if (!(m instanceof TLVMessage message)) {
             throw new IllegalArgumentException("Invalid message type");
         }
