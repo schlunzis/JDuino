@@ -77,9 +77,10 @@ public class SerialChannel implements Channel {
 
         serialPort.setComPortTimeouts(
                 SerialPort.TIMEOUT_READ_BLOCKING,
-                1000,    // Read timeout (ms)
+                0,
                 0
         );
+        serialPort.setDTRandRTS(false, false);
         serialPort.addDataListener(new SerialDataListener(serialPort, (Message message) ->
                         listeners.forEach(listener ->
                                 listener.onMessageReceived(message)),
