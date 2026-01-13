@@ -1,6 +1,7 @@
 package org.schlunzis.jduino.channel.serial;
 
 import com.fazecast.jSerialComm.SerialPort;
+import org.jspecify.annotations.Nullable;
 import org.schlunzis.jduino.channel.Channel;
 import org.schlunzis.jduino.channel.ChannelMessageListener;
 import org.schlunzis.jduino.channel.DeviceConfiguration;
@@ -18,6 +19,7 @@ public class SerialChannel implements Channel {
     private static final Logger log = LoggerFactory.getLogger(SerialChannel.class);
     private final List<ChannelMessageListener> listeners;
     private final Protocol protocol;
+    @Nullable
     private SerialPort serialPort;
     private boolean connected = false;
 
@@ -99,7 +101,7 @@ public class SerialChannel implements Channel {
             log.info("Channel is not connected");
             return;
         }
-        if (serialPort.closePort()) {
+        if (serialPort != null && serialPort.closePort()) {
             connected = false;
             log.info("Port closed successfully");
         } else {
@@ -109,6 +111,11 @@ public class SerialChannel implements Channel {
 
     @Override
     public void sendMessage(Message message) {
+        if (!connected || serialPort == null) {
+            log.error("Channel is not connected");
+            return;
+        }
+
         byte[] encodedMessage = protocol.getMessageEncoder().encode(message);
 
         serialPort.writeBytes(encodedMessage, encodedMessage.length);

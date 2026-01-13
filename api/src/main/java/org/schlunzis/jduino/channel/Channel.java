@@ -1,5 +1,6 @@
 package org.schlunzis.jduino.channel;
 
+import org.jspecify.annotations.Nullable;
 import org.schlunzis.jduino.protocol.Message;
 import org.schlunzis.jduino.protocol.Protocol;
 
@@ -34,10 +35,12 @@ public interface Channel {
 
     class ChannelBuilder<P extends Protocol, C extends Channel> {
 
+        @Nullable
         protected P protocol;
+        @Nullable
         protected ChannelFactory<P, C> channelFactory;
 
-        public ChannelBuilder(P protocol, ChannelFactory<P, C> channelFactory) {
+        protected ChannelBuilder(@Nullable P protocol, @Nullable ChannelFactory<P, C> channelFactory) {
             this.protocol = protocol;
             this.channelFactory = channelFactory;
         }
@@ -47,6 +50,7 @@ public interface Channel {
         }
 
         public <C2 extends Channel> ChannelBuilder<P, C2> channelFactory(ChannelFactory<P, C2> channelFactory) {
+            //noinspection NullableProblems
             return new ChannelBuilder<>(protocol, channelFactory);
         }
 
